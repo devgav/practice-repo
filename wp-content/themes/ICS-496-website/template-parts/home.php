@@ -493,7 +493,6 @@ figure.snip1192 .author h5 span {
     while($testimonial_query->have_posts()):
         $testimonial_query->the_post();
         $home_image = get_post_meta(get_the_ID(), 'home_page_background_image', true);
-        $video_play = get_post_meta(get_the_ID(), 'video_url', true);
     ?>
         <?php
             $main_text_color = get_field("home_page_main_title_color") ? get_field("home_page_main_title_color") : "black";
@@ -516,35 +515,13 @@ figure.snip1192 .author h5 span {
                 </div>
             </div>
             <div id="content" class="site-main">
-                <div class="grid-container-about">
-                    <div class="left-grid-item-about">
-                        <div class="second">
-                            <div class="second-inner">
-                                <h1 class="main-inner-title">
-                                    <?php the_field('subsection_second_title') ?>
-                                <h1>
-                            </div>
-                            <div class="third-inner">
-                                <p class="inner-paragraph">
-                                    <?php the_field('subsection_paragraph') ?>
-                                </p>
-                                <a class="center_button" src=<?php echo the_field('subsection_button_link')?>>
-                                    <button id="btn-work" class="btn btn--block card__btn">
-                                        <?php the_field('subsection_button_title') ?>
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="right-grid-item-about">
-                        <?php
-                            if ($video_play):
-                        ?>
-                            <?php $embed_url = str_replace("watch?v=", "embed/", $video_play); ?>
-                            <iframe width="355" height="400" src=<?php echo $embed_url ?> title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php
+                    // Get the post content
+                    echo '<div class="excerpt-text">';
+                    $post_content = get_post_field('post_content', get_the_ID());
+                    echo '<p>'. $post_content. '</p>';
+                    echo '</div>'
+                ?>
             </div>
             <?php
                 endwhile;
@@ -574,63 +551,64 @@ figure.snip1192 .author h5 span {
                         while($testimonial_query->have_posts()):
                             $testimonial_query->the_post();
                             $inckey++;
-                ?>
-                    <?php
-                        echo '<div class="slides-item slide-'. $inckey. '"'. 'id="slide-'. $inckey. '"'. 'aria-label="slide 1 of 5" tabindex="0">';
-                        echo '<figure class="snip1192">';
-                        // retrieve the id of the person in the testimonial content type
-                        $testimonial_id = get_post_meta(get_the_ID(), 'testimonial_person', true);
-                        $testimonial_statement = get_post_meta(get_the_ID(), 'testimonial_statement', true);
-                        $testimonial_person_first_name = get_post_meta($testimonial_id, 'person_first_name', true);
-                        $testimonial_person_last_name = get_post_meta($testimonial_id, 'person_last_name', true);
-                        $testimonial_person_image = get_post_meta($testimonial_id, 'person_image', true);
-                        $testimonial_person_image_url = wp_get_attachment_image( $testimonial_person_image );
-                        echo '<blockquote>';
-                            echo $testimonial_statement;
-                        echo '</blockquote>';
-                        echo '<div class="author">';
-                            if ($testimonial_person_image != null) {
-                            echo $testimonial_person_image_url;
-                            echo '<h5 style="color: black;">';
-                                echo $testimonial_person_first_name. '<span>'. $testimonial_person_last_name. '</span>';
-                            echo '</h5>';
-                            } else {
-                            echo '<h5 style="color: black;">';
-                                echo $testimonial_person_first_name. '<span>'. $testimonial_person_last_name. '</span>';
-                            echo '</h5>';
-                            }
-                        echo '</div>';
-                        echo '</figure>';
-                        echo '</div>';
-                    ?>
-
-                    <?php
+                            echo '<div class="slides-item slide-'. $inckey. '"'. 'id="slide-'. $inckey. '"'. 'aria-label="slide 1 of 5" tabindex="0">';
+                            echo '<figure class="snip1192">';
+                            // retrieve the id of the person in the testimonial content type
+                            $testimonial_id = get_post_meta(get_the_ID(), 'testimonial_person', true);
+                            $testimonial_statement = get_post_meta(get_the_ID(), 'testimonial_statement', true);
+                            $testimonial_person_first_name = get_post_meta($testimonial_id, 'person_first_name', true);
+                            $testimonial_person_last_name = get_post_meta($testimonial_id, 'person_last_name', true);
+                            $testimonial_person_image = get_post_meta($testimonial_id, 'person_image', true);
+                            $testimonial_person_image_url = wp_get_attachment_image( $testimonial_person_image );
+                            echo '<blockquote>';
+                                echo $testimonial_statement;
+                            echo '</blockquote>';
+                            echo '<div class="author">';
+                                if ($testimonial_person_image != null) {
+                                echo $testimonial_person_image_url;
+                                echo '<h5 style="color: black;">';
+                                    echo $testimonial_person_first_name. '<span>'. $testimonial_person_last_name. '</span>';
+                                echo '</h5>';
+                                } else {
+                                echo '<h5 style="color: black;">';
+                                    echo $testimonial_person_first_name. '<span>'. $testimonial_person_last_name. '</span>';
+                                echo '</h5>';
+                                }
+                            echo '</div>';
+                            echo '</figure>';
+                            echo '</div>';
                         endwhile;
                         wp_reset_postdata();
-                        endif;
-                    ?>
-                    </section>
-                    <div class="carousel__skip-message" id="skip-link" tabindex="0">
-                        <section class="carousel" aria-label="carousel" Tabindex="0">
-                        <a class="carousel__skip-link" href="#skip-link">Skip the Carousel</a>
-                        <div class="carousel__nav">
-                            <?php
-                                if ($num_of_posts != 0) {
-                                    for ($count = 1; $count <= $num_of_posts; $count++) {
-                                        echo '<a class="slider-nav"'. ' href="#slide-'. $count. '"'. ' aria-label="Go to Slide'. $count. '"'. '>'. $count. '</a>';
-                                    }
+                    else:
+                        //
+                    endif;
+                ?>
+                </section>
+                <div class="carousel__skip-message" id="skip-link" tabindex="0">
+                    <section class="carousel" aria-label="carousel" Tabindex="0">
+                    <a class="carousel__skip-link" href="#skip-link">Skip the Carousel</a>
+                    <div class="carousel__nav">
+                        <?php
+                            if ($num_of_posts != 0) {
+                                for ($count = 1; $count <= $num_of_posts; $count++) {
+                                    echo '<a class="slider-nav"'. ' href="#slide-'. $count. '"'. ' aria-label="Go to Slide'. $count. '"'. '>'. $count. '</a>';
                                 }
-                            ?>
-                        </div>
-                        <div class="carousel__skip-message" id="skip-link" tabindex="0"></div>
+                            }
+                        ?>
                     </div>
+                    <div class="carousel__skip-message" id="skip-link" tabindex="0"></div>
+                </div>
 
                     <!-- News grid content -->
                     <div class="news-grid">
                         <?php
                             wp_head();
                             $news_grid = do_shortcode('[sp_news grid="4" limit="4"]');
-                            echo $news_grid;
+                            if ($news_grid) {
+                                echo $news_grid;
+                            } else {
+
+                            }
                         ?>
                     </div>
         </body>
